@@ -163,7 +163,6 @@ StScrollBar StButton#vhandle:active, StScrollBar StButton#hhandle:active {
 .slider {
   height: 4px;
   -slider-height: 2px;
-  color: #adadad;
   -slider-background-color: #f4f4f4;
   -slider-border-color: #a1a1a1;
   -slider-active-background-color: #5596db;

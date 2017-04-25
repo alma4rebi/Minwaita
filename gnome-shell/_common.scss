@@ -5,7 +5,9 @@ $cakeisalie: "This stylesheet is generated, DO NOT EDIT";
 
 /* #{$cakeisalie} */
 
-$panel-corner-radius: 6px;
+$panel-corner-radius: if($variant == "light", 0, 6px);
+
+// just looks weird otherwise
 
 /* Copyright 2009, 2015 Red Hat, Inc.
  *
@@ -31,8 +33,9 @@ $panel-corner-radius: 6px;
 $font-size: 11;
 $font-family: Cantarell, Sans-Serif;
 $_bubble_bg_color: opacify($osd_bg_color, 0.25);
-$_bubble_fg_color: $fg_color;
-$_bubble_borders_color: transparentize($osd_fg_color, 0.8);
+$_bubble_fg_color: $osd_fg_color;
+$_bubble_borders_color: if($variant == "light", $borders_color, transparentize($osd_fg_color, 0.8));
+$resource_path: if($variant == 'light', "assets"  , "resource:///org/gnome/shell/theme");
 
 stage {
   font-family: $font-family;
@@ -84,18 +87,25 @@ stage {
 
   padding: 12px;
 
-  &:first-child {
-    border-radius: 0px 0px 0px 6px;
+  @if $variant == "dark" {
+    // does some weird thing where the border-radius is black
+    &:first-child {
+      border-radius: 0px 0px 0px 6px;
+    }
+
+    &:last-child {
+      border-right-width: 0px;
+      border-radius: 0px 0px 6px 0px;
+    }
+
+    &:first-child:last-child {
+      border-right-width: 0px;
+      border-radius: 0px 0px 6px 6px;
+    }
   }
 
-  &:last-child {
-    border-right-width: 0px;
-    border-radius: 0px 0px 6px 0px;
-  }
-
-  &:first-child:last-child {
-    border-right-width: 0px;
-    border-radius: 0px 0px 6px 6px;
+  @if $variant == "light" {
+    border-radius: 0px;
   }
 }
 
@@ -174,6 +184,7 @@ StScrollBar {
 .slider {
   height: 4px;
   -slider-height: 2px;
+  @if $variant == 'light' {color: lighten($borders_color, 5);}
   -slider-background-color: $insensitive_bg_color;
 
   //background of the trough
@@ -200,19 +211,19 @@ StScrollBar {
   StBin {
     width: 24px;
     height: 22px;
-    background-image: url("resource:///org/gnome/shell/theme/checkbox-off.svg");
+    background-image: url("#{$resource_path}/checkbox-off.svg");
   }
 
   &:focus StBin {
-    background-image: url("resource:///org/gnome/shell/theme/checkbox-off-focused.svg");
+    background-image: url("#{$resource_path}/checkbox-off-focused.svg");
   }
 
   &:checked StBin {
-    background-image: url("resource:///org/gnome/shell/theme/checkbox.svg");
+    background-image: url("#{$resource_path}/checkbox.svg");
   }
 
   &:focus:checked StBin {
-    background-image: url("resource:///org/gnome/shell/theme/checkbox-focused.svg");
+    background-image: url("#{$resource_path}/checkbox-focused.svg");
   }
 }
 
@@ -225,10 +236,10 @@ StScrollBar {
 
 @each $v in us, intl {
   .toggle-switch-#{$v} {
-    background-image: url("resource:///org/gnome/shell/theme/toggle-off-#{$v}.svg");
+    background-image: url("#{$resource_path}/toggle-off-#{$v}.svg");
 
     &:checked {
-      background-image: url("resource:///org/gnome/shell/theme/toggle-on-#{$v}.svg");
+      background-image: url("#{$resource_path}/toggle-on-#{$v}.svg");
     }
   }
 }
@@ -877,7 +888,7 @@ StScrollBar {
   background-color: $selected_bg_color;
   color: $selected_fg_color;
 
-  //background-image: url("resource:///org/gnome/shell/theme/ws-switch-arrow-up.png");
+  //background-image: url("#{$resource_path}/ws-switch-arrow-up.png");
   background-size: 32px;
   border-radius: 8px;
 }
@@ -921,6 +932,11 @@ StScrollBar {
   background-color: black;
   font-weight: bold;
   height: 1.86em;
+
+  @if $variant == "light" {
+    background-color: transparent;
+    border-image: url("assets/panel-light.png");
+  }
 
   &.unlock-screen,
   &.login-screen,
@@ -975,7 +991,7 @@ StScrollBar {
     -natural-hpadding: 10px;
     -minimum-hpadding: 5px;
     font-weight: bold;
-    color: #ccc;
+    color: $panel_fg;
     transition-duration: 100ms;
 
     .app-menu-icon {
@@ -996,7 +1012,7 @@ StScrollBar {
       // a box-shadow
       background-color: rgba(0, 0, 0, 0.01);
       box-shadow: inset 0 -2px 0px lighten($selected_bg_color, 5%);
-      color: lighten($fg_color, 10%);
+      color: lighten($panel_fg, 10%);
 
       & > .system-status-icon {
         icon-shadow: black 0 2px 2px;
@@ -1073,7 +1089,7 @@ StScrollBar {
 }
 
 .datemenu-calendar-column {
-  border: 0 solid lighten($bg_color, 5%);
+  border: 0 solid if($variant == "light", $borders_color, lighten($bg_color, 5%));
 
   &:ltr {
     border-left-width: 1px;
@@ -1177,6 +1193,7 @@ StScrollBar {
 }
 
 .calendar-day-base {
+  color: $fg_color;
   font-size: 80%;
   text-align: center;
   width: 2.4em;
@@ -1234,9 +1251,9 @@ StScrollBar {
 }
 
 .calendar-day-with-events {
-  color: lighten($fg_color, 10%);
+  color: if($variant == "light", $selected_bg_color, lighten($fg_color, 10%));
   font-weight: bold;
-  background-image: url("resource:///org/gnome/shell/theme/calendar-today.svg");
+  background-image: url("#{$resource_path}/calendar-today.svg");
 }
 
 .calendar-other-month-day {
@@ -1262,7 +1279,7 @@ StScrollBar {
 }
 
 .message-list-clear-button.button {
-  background-color: transparent;
+  background-color: if($variant == "light", $bg_color, transparent);
 
   &:hover, &:focus {
     background-color: lighten($bg_color, 5%);
@@ -1345,7 +1362,7 @@ StScrollBar {
   }
 
   &:insensitive {
-    color: darken($fg_color, 40%);
+    color: if($variant == 'light', lighten($fg_color, 40%), darken($fg_color, 40));
   }
 }
 
@@ -1353,7 +1370,7 @@ StScrollBar {
   icon-size: 48px !important;
 
   &.fallback {
-    color: lighten($bg_color, 10%);
+    color: if($variant == 'light', $fg_color, lighten($bg_color, 10%));
     background-color: $bg_color;
     border: 2px solid $bg_color;
     border-radius: 2px;
@@ -1375,7 +1392,7 @@ StScrollBar {
 }
 
 #appMenu {
-  spinner-image: url("resource:///org/gnome/shell/theme/process-working.svg");
+  spinner-image: url("#{$resource_path}/process-working.svg");
   padding: 0 11px 0 6px;
   spacing: 4px;
 
@@ -1398,7 +1415,7 @@ StScrollBar {
 
   /* wish we could do 50% */
   padding: 13px;
-  border: 1px solid lighten($borders_color, 5%);
+  border: 1px solid if($variant == "light", $borders_color, lighten($borders_color, 5%));
 
   &:hover, &:focus {
     background-color: transparentize($fg_color, 0.9);
@@ -1421,7 +1438,7 @@ StScrollBar {
 .ripple-box {
   width: 52px;
   height: 52px;
-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-ltr.png");
+  background-image: ("resource:///org/gnome/shell/theme/corner-ripple-ltr.png");
   background-size: contain;
 }
 
@@ -1564,7 +1581,7 @@ StScrollBar {
 .window-caption {
   spacing: 25px;
   color: $fg_color;
-  background-color: transparentize($osd_bg_color, 0.3);
+  background-color: $osd_bg_color;
   border-radius: 8px;
   padding: 4px 12px;
   -shell-caption-spacing: 12px;
@@ -1580,7 +1597,7 @@ StScrollBar {
   width: 320px;
   padding: 7px 9px;
   border-radius: 6px;
-  border-color: darken($osd_fg_color, 50%);
+  border-color: if($variant == 'light', $borders_color, darken($osd_fg_color, 50%));
   color: $fg_color;
   background-color: $osd_bg_color;
 
@@ -1593,12 +1610,12 @@ StScrollBar {
   .search-entry-icon {
     icon-size: 1em;
     padding: 0 4px;
-    color: transparentize($white, 0.3);
-  }
+    color: if($variant == "light", $fg_color, transparentize(white, 0.3));
 
-  &:hover, &:focus {
-    .search-entry-icon {
-      color: $fg_color;
+    &:hover, &:focus {
+      .search-entry-icon {
+        color: if($variant == "light", $selected_bg_color, $fg_color);
+      }
     }
   }
 }
@@ -1649,11 +1666,11 @@ StScrollBar {
 
 .list-search-result-title {
   font-size: 1.5em;
-  color: darken($white, 5%);
+  color: darken(white, 5%);
 }
 
 .list-search-result-description {
-  color: darken($white, 15%);
+  color: darken(white, 15%);
 }
 
 .search-provider-icon {
@@ -1682,7 +1699,7 @@ StScrollBar {
   }
 
   .placeholder {
-    background-image: url("resource:///org/gnome/shell/theme/dash-placeholder.svg");
+    background-image: url("#{$resource_path}/dash-placeholder.svg");
     background-size: contain;
     height: 24px;
   }
@@ -1839,11 +1856,13 @@ StScrollBar {
 
   &:first-child {
     border-right-width: 0;
+    @if $variant == 'light' {border-color: $borders_color;}
     border-radius: 3px 0 0 3px;
   }
 
   &:last-child {
     border-radius: 0 3px 3px 0;
+    @if $variant == 'light' {border-color: $borders_color;}
   }
 }
 
@@ -1895,7 +1914,7 @@ StScrollBar {
 }
 
 %icon_tile {
-  color: $white;
+  color: white;
   border-radius: 4px;
   padding: 6px;
   border: 1px solid transparent;
@@ -1909,8 +1928,14 @@ StScrollBar {
 
 .show-apps:checked .show-apps-icon,
 .show-apps:focus .show-apps-icon {
-  color: white;
+  color: if($variant == "light", $selected_bg_color, white);
   transition-duration: 100ms;
+}
+
+@if $variant == "light" {
+  .show-apps .show-apps-icon {
+    color: $fg_color;
+  }
 }
 
 // Collections
@@ -1997,7 +2022,7 @@ StScrollBar {
 }
 
 %overview-panel {
-  color: $white;
+  color: white;
   background-color: $_bubble_bg_color;
   border: 1px solid $_bubble_borders_color;
 }
@@ -2005,7 +2030,7 @@ StScrollBar {
 %status_text {
   font-size: 2em;
   font-weight: bold;
-  color: $fg_color;
+  color: $white_text;
 }
 
 /* NOTIFICATIONS & MESSAGE TRAY */
@@ -2054,7 +2079,7 @@ StScrollBar {
 
   .notification-button {
     padding: 4px 4px 5px;
-    background-color: darken($_bubble_bg_color, 5%);
+    background-color: if($variant == "light", $_bubble_bg_color, darken($_bubble_bg_color, 5%));
 
     &:first-child {
       border-radius: 0 0 0 6px;
@@ -2065,7 +2090,7 @@ StScrollBar {
     }
 
     &:hover, &focus {
-      background-color: darken($_bubble_bg_color, 2%);
+      background-color: if($variant == "light", lighten($_bubble_bg_color, 2%), darken($_bubble_bg_color, 2%));
     }
   }
 }
@@ -2292,7 +2317,7 @@ $legacy_icon_size: 24px;
   &:grayed {
     //FIXME
     background-color: $osd_bg_color;
-    color: $white;
+    color: white;
     border-color: $osd_borders_color;
   }
 }
